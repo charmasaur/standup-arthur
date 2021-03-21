@@ -12,9 +12,16 @@ const HOST = '0.0.0.0';
 const app = express();
 
 app.use(express.json());
+app.use(express.static('public'))
 
 app.get('/', (request, response) => {
-  response.send('Welcome to Standup Arthur');
+    response.send('Welcome to Standup Arthur');
+    // TODO: In the future we should "Sign in with Slack" here.
+});
+
+app.get('/dashboard', (request, response) => {
+    response.send('Welcome to Standup Arthur');
+    // TODO: In the future we should "Sign in with Slack" here.
 });
 
 app.post('/events', (request, response) => {
@@ -37,6 +44,46 @@ app.post('/events', (request, response) => {
     }
 
     response.send("");
+});
+
+// TODO: Gets called by cron
+app.get('/start_standup', (request, response) => {
+    console.log("Starting standup");
+    // TODO:
+    //  - Get some kind of ID from the URL.
+    //  - Look up the configuration for the standup.
+    //  - Send messages as appropriate.
+    response.send("");
+});
+
+// TODO: Gets called by cron
+app.get('/stop_standup', (request, response) => {
+    console.log("Stopping standup");
+    // TODO:
+    //  - Get some kind of ID from the URL.
+    //  - Look up the configuration for the standup.
+    //  - Send the results.
+    response.send("");
+});
+
+// TODO: API for configuring standups.
+//
+exports.listusers = functions.https.onRequest((request, response) => {
+    // Temp endpoint, this would form part of the configuration flow.
+    const options = {
+        hostname: 'slack.com',
+        path: `/api/users.list?token=${bearer}`,
+        method: 'GET'
+    }
+
+    return request_promise(options)
+        .then(body => {
+            response.send(body);
+            return;
+        })
+        .catch(error => {
+            response.send("Error: " + error);
+        });
 });
 
 app.listen(PORT, HOST);
@@ -71,5 +118,11 @@ function handle_event(event_data) {
 
     // TODO: Save this response in the database.
     // TODO: Ask the next question if necessary.
+    //
+    // TODO: What if a user is in multiple standups? Could just disallow that for now.
 }
 
+
+// TODO: OAuth (need this in order to actually distribute)
+// https://api.slack.com/authentication/oauth-v2. But for now it can just be internal (see
+// https://api.slack.com/start/overview#installing_distributing).
