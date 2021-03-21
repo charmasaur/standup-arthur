@@ -1,0 +1,13 @@
+{
+  "name": "standup_arthur",
+  "version": "1.0.0",
+  "description": "Backend for Standup Arthur",
+  "author": "Harry Slatyer <harry.slatyer@gmail.com>",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.16.1"
+  }
+}
