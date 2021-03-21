@@ -2,6 +2,7 @@
 
 const express = require('express');
 const crypto = require('crypto');
+const mustacheExpress = require('mustache-express');
 
 
 // Constants
@@ -12,16 +13,46 @@ const HOST = '0.0.0.0';
 const app = express();
 
 app.use(express.json());
-app.use(express.static('public'))
+
+app.engine('mustache', mustacheExpress());
+app.set('view engine', 'mustache');
+app.set('views', __dirname + '/views');
 
 app.get('/', (request, response) => {
-    response.send('Welcome to Standup Arthur');
+    response.render('home');
     // TODO: In the future we should "Sign in with Slack" here.
 });
 
-app.get('/dashboard', (request, response) => {
-    response.send('Welcome to Standup Arthur');
-    // TODO: In the future we should "Sign in with Slack" here.
+app.get('/standups', (request, response) => {
+    response.render('standups');
+    // TODO: Show a list of standups, we should be able to edit each one.
+});
+
+app.post('/standups', (request, response) => {
+    // TODO:
+    //  - Set up cron jobs.
+    //  - Save data in database.
+    //  - Redirect to the edit page for the new standup.
+    response.redirect('/standups');
+    response.render('standups');
+});
+
+app.get('/standups/:standup_id', (request, response) => {
+    // TODO:
+    //  - Show information about this standup and allow editing.
+    response.send(request.params);
+});
+
+app.patch('/standups/:standup_id', (request, response) => {
+    // TODO:
+    //  - Edit this standup.
+    response.send(request.params);
+});
+
+app.delete('/standups/:standup_id', (request, response) => {
+    // TODO:
+    //  - Delete this standup.
+    response.send(request.params);
 });
 
 app.post('/events', (request, response) => {
@@ -50,7 +81,7 @@ app.post('/events', (request, response) => {
 app.get('/start_standup', (request, response) => {
     console.log("Starting standup");
     // TODO:
-    //  - Get some kind of ID from the URL.
+    //  - Get some kind of ID from the request.
     //  - Look up the configuration for the standup.
     //  - Send messages as appropriate.
     response.send("");
@@ -60,30 +91,10 @@ app.get('/start_standup', (request, response) => {
 app.get('/stop_standup', (request, response) => {
     console.log("Stopping standup");
     // TODO:
-    //  - Get some kind of ID from the URL.
+    //  - Get some kind of ID from the request.
     //  - Look up the configuration for the standup.
     //  - Send the results.
     response.send("");
-});
-
-// TODO: API for configuring standups.
-//
-exports.listusers = functions.https.onRequest((request, response) => {
-    // Temp endpoint, this would form part of the configuration flow.
-    const options = {
-        hostname: 'slack.com',
-        path: `/api/users.list?token=${bearer}`,
-        method: 'GET'
-    }
-
-    return request_promise(options)
-        .then(body => {
-            response.send(body);
-            return;
-        })
-        .catch(error => {
-            response.send("Error: " + error);
-        });
 });
 
 app.listen(PORT, HOST);
